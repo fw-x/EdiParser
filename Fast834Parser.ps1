@@ -14,7 +14,7 @@ function Fast834Parser {
         [int]$MaxDegreeOfParallelism = [Environment]::ProcessorCount,
 
         [ValidateSet("Display", "Grid", "Csv")]
-        [string]$OutputMode = "Display",
+        [string]$OutputMode = default,
 
         [Parameter(Mandatory = $false)]
         [string]$CsvPath
