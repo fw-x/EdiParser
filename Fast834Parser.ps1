@@ -41,9 +41,9 @@ function Fast834Parser {
             break 
         }
         "Csv"    {
-                $results | Export-Csv -Path $CsvPath -NoTypeInformation
-                Write-Host "Results exported to $CsvPath" -ForegroundColor Green
-                break
+            $results | Export-Csv -Path $CsvPath -NoTypeInformation
+            Write-Host "Results exported to $CsvPath" -ForegroundColor Green
+            break
         }
         "Display"  {
             $results | Format-Table -AutoSize
