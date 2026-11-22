@@ -30,7 +30,7 @@ function Fast834Parser {
     # 2. Call your static C# master entry point directly
     $results = [EdiParser.Fast834Parser]::ParseFiles(
         $FilePaths,
-        $TargetIds,
+        $Find,
         $MaxDegreeOfParallelism
     )
 
