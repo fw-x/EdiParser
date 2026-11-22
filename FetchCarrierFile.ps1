@@ -4,7 +4,7 @@ function NormalizeDateFormat {
         [Parameter(Mandatory = $true)]
         [string]$DateStringFormat  
     )
-    # Adj accordingly for formats that have a time stamp (e.g hh:mm:ss)
+
     $normalizedFormat = $DateStringFormat -replace 'Y', 'y' -replace 'D', 'd' -replace 'm', 'M'
         return $normalizedFormat
 }
@@ -65,7 +65,6 @@ function FileDateFilter {
     # Filter files using regex against the filename
     $files = Get-ChildItem -Path $FolderPath -File | Where-Object {
         if ($_.Name -match $FilePattern) {
-            # Extract the 8-digit date match group (always group 1 based on your patterns)
             $dateString = $Matches[1]
             $fileDate = [datetime]::ParseExact($dateString, $DateFormat, $null)
 
@@ -101,7 +100,7 @@ function FetchCarrierFile {
         [string]$EndDate
     )
 
-    # 1. Fetch carrier-specific attributes once
+
     $carrierAttr = CarrierFileAttributes $Carrier
     if (-not $carrierAttr) {
         Write-Error "Unknown carrier: $Carrier"
@@ -111,14 +110,14 @@ function FetchCarrierFile {
     $dateFormat = $carrierAttr.date_frmt
     $filePattern = $carrierAttr.file_pattern
 
-    # Define a robust list of fallback formats your script can accept 
-    # (combining the carrier's specified format with standard slash/dash variations)
+
     $allowedFormats = @($dateFormat, "MM/dd/yyyy", "yyyy-MM-dd", "MM-dd-yyyy")
+    
     # Use InvariantCulture so separators like '/' are evaluated strictly
     $culture = [System.Globalization.CultureInfo]::InvariantCulture
     $styles  = [System.Globalization.DateTimeStyles]::None
 
-    # Helper scriptblock to safely parse dates without crashing
+
     $ParseDateString = {
         param([string]$dateStr, [string]$paramName)
         
@@ -131,7 +130,7 @@ function FetchCarrierFile {
         throw "Could not parse '$dateStr' for -$paramName. Please use a valid format (e.g., yyyyMMdd or MM/dd/yyyy)."
     }
 
-    # 2. Assign dynamic defaults or parse user strings safely
+
     if ([string]::IsNullOrWhiteSpace($StartDate)) {
         $ParsedStartDate = Get-Date -Year (Get-Date).Year -Month 1 -Day 1 -Hour 0 -Minute 0 -Second 0
     } else {
@@ -144,7 +143,7 @@ function FetchCarrierFile {
         $ParsedEndDate = & $ParseDateString $EndDate "EndDate"
     }
 
-    # Pass strongly-typed datetime objects down to the filter
+
     FileDateFilter -FolderPath $Path `
                    -FilePattern $filePattern `
                    -StartDate $ParsedStartDate `
