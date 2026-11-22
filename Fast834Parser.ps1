@@ -14,9 +14,18 @@ function Fast834Parser {
         [int]$MaxDegreeOfParallelism = [Environment]::ProcessorCount,
 
         [ValidateSet("Display", "Grid", "Csv")]
-        [string]$OutputMode = "Display"
+        [string]$OutputMode = "Display",
+
+        [Parameter(Mandatory = $false)]
+        [string]$CsvPath
         
     )
+
+
+    # Validate that CsvPath is provided if OutputMode is Csv
+    if ($OutputMode -eq "Csv" -and [string]::IsNullOrWhiteSpace($CsvPath)) {
+        throw "The -CsvPath parameter is required when OutputMode is set to 'Csv'."
+    }
 
     # 2. Call your static C# master entry point directly
     $results = [EdiParser.Fast834Parser]::ParseFiles(
@@ -32,9 +41,9 @@ function Fast834Parser {
             break 
         }
         "Csv"    {
-            $results | Export-Csv "C:\Temp\ParsedResults.csv" -NoTypeInformation
-            Write-Host "Results exported to C:\Temp\ParsedResults.csv" -ForegroundColor Green
-            break
+                $results | Export-Csv -Path $CsvPath -NoTypeInformation
+                Write-Host "Results exported to $CsvPath" -ForegroundColor Green
+                break
         }
         "Display"  {
             $results | Format-Table -AutoSize
